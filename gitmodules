@@ -1,0 +1,3 @@
+[submodule "scripts/BeatSystem/BeatTrackingSystem"]
+	path = scripts/BeatSystem/BeatTrackingSystem
+	url = https://github.com/Shestaevd/BeatTrackingSystem
