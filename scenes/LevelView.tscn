@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://bu8qdn0ftpygs"]
+
+[ext_resource type="Script" path="res://scripts/LevelView.cs" id="1_4e4fh"]
+
+[sub_resource type="Gradient" id="Gradient_e847f"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0, 0, 0.380392, 1, 0.631373, 1, 1, 1, 0, 0, 0.380392, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_jwm57"]
+gradient = SubResource("Gradient_e847f")
+
+[node name="LevelView" type="Node2D"]
+script = ExtResource("1_4e4fh")
+
+[node name="background" type="Sprite2D" parent="."]
+scale = Vector2(10.2969, 18.0313)
+texture = SubResource("GradientTexture2D_jwm57")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+drag_left_margin = 0.0
+drag_top_margin = 0.0
+drag_right_margin = 0.0
+drag_bottom_margin = 0.0

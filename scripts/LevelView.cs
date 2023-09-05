@@ -1,26 +1,28 @@
 using Godot;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using TileBeat.scripts.testing;
 
-public partial class Game : Node2D
+public partial class LevelView : Node2D
 {
 
     public int XSize = 10;
     public int YSize = 10;
+
+    float NodeXSize = 0;
+    float NodeYSize = 0;
 
     public Node2D[,] tiles;
 
     public string[,] tileNames;
     public Dictionary<string, Sprite2D> sprites;
 
-    private Stater stater = new Stater();
+    private Camera2D camera;
+    private Sprite2D background;
 
     private void testlogic()
     {
         sprites = new Dictionary<string, Sprite2D>();
-        var tilePS = GD.Load<PackedScene>("scenes/tile.tscn");
+        var tilePS = GD.Load<PackedScene>("scenes/test/tile.tscn");
 
         var tile1 = (Sprite2D)tilePS.Instantiate();
         sprites.Add("t1", tile1);
@@ -49,75 +51,62 @@ public partial class Game : Node2D
 
     public override void _Ready()
     {
-        testlogic();
+        if (tileNames == null) testlogic();
 
-        var viewportsize = GetViewport().GetVisibleRect().Size;
-        var maxPixelSize = Math.Min(viewportsize.X, viewportsize.Y);
-
-        float NodeXSize = maxPixelSize / XSize;
-        float NodeYSize = maxPixelSize / YSize;
-
-        float XOffset = (viewportsize.X - maxPixelSize) / 2;
-        float YOffset = (viewportsize.Y - maxPixelSize) / 2;
+        camera = (Camera2D) GetNode("Camera2D");
+        background = (Sprite2D) GetNode("background");
 
         foreach (KeyValuePair<string, Sprite2D> entry in sprites)
         {
             var tSize = entry.Value.Texture.GetSize();
 
-            entry.Value.ApplyScale(
-                new Vector2(
-                    NodeXSize / tSize.X,
-                    NodeYSize / tSize.Y
-                )
-            );
+            NodeXSize = Math.Max(NodeXSize, tSize.X);
+            NodeYSize = Math.Max(NodeYSize, tSize.Y);
         }
 
+        float TileMargin = 10;
+
+        float TotalGridSizeX = XSize * (NodeXSize + TileMargin) + TileMargin;
+        float TotalGridSizeY = YSize * (NodeYSize + TileMargin) + TileMargin;
+
+        var viewportsize = camera.GetViewport().GetVisibleRect().Size;
+
+        var zoom = Math.Min(viewportsize.X / TotalGridSizeX, viewportsize.Y / TotalGridSizeY);
+
+        camera.Zoom = new Vector2(
+            zoom,
+            zoom
+        );
+
+        background.ApplyScale(new Vector2(
+            1/zoom,
+            1/zoom
+        ));
+
         tiles = new Node2D[XSize, YSize];
+
+        var startOfGridX = - TotalGridSizeX / 2 - NodeXSize / 2 + TileMargin;
+        var startOfGridY = - TotalGridSizeY / 2 - NodeYSize / 2 + TileMargin;
 
         for (int i = 0; i < XSize; i++)
         {
             for (int j = 0; j < YSize; j++)
             {
-                var tile = new Node2D();
-
-                tile.Position = new Vector2(
-                    XOffset + NodeXSize * i + NodeXSize / 2,
-                    YOffset + NodeYSize * j + NodeYSize / 2
-                );
+                var tile = new Node2D
+                {
+                    Position = new Vector2(
+                        startOfGridX + NodeXSize * i + NodeXSize / 2 + (TileMargin * i),
+                        startOfGridY + NodeYSize * j + NodeYSize / 2 + (TileMargin * j)
+                    )
+                };
 
                 var sprite = (Sprite2D)sprites[tileNames[i, j]].Duplicate();
+                sprite.Position = new Vector2(NodeXSize / 2, NodeYSize / 2);
                 tile.AddChild(sprite);
 
                 AddChild(tile);
 
                 tiles[i, j] = tile;
-            }
-        }
-
-        var ticker = new Timer();
-        ticker.OneShot = false;
-        ticker.Autostart = false;
-        ticker.Timeout += onTick;
-
-        AddChild(ticker);
-        ticker.Start(0.5);
-
-    }
-
-    private void onTick()
-    {
-        var steps = stater.nextSteps();
-
-        if (steps != null)
-        {
-            foreach (Step step in steps)
-            {
-                var t = tiles[step.X, step.Y];
-
-                t.RemoveChild(t.GetChild(0));
-
-                var sprite = (Sprite2D)sprites[step.sprite].Duplicate();
-                t.AddChild(sprite);
             }
         }
     }
