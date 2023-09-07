@@ -5,7 +5,7 @@ using System.IO;
 
 namespace TileBeat.scripts.Loaders
 {
-    internal class AudioLoader
+    internal class AudioStreamLoader
     {
         public static AudioStream LoadAudio(string path)
         {

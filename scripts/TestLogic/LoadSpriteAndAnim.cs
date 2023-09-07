@@ -25,7 +25,7 @@ public partial class LoadSpriteAndAnim : Node
 		AddChild(animatedSprite2D);
 		animatedSprite2D.Play("testAnim");
 
-		AudioStream stream = AudioLoader.LoadAudio(audio);
+		AudioStream stream = AudioStreamLoader.LoadAudio(audio);
 		AudioStreamPlayer2D player = new AudioStreamPlayer2D();
 		player.Stream = stream;
 		player.VolumeDb = 0.1f;
