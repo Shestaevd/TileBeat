@@ -27,7 +27,7 @@ namespace TileBeat.scripts.Managers
 
         public override void _Ready()
         {
-            if (_sprites == null) throw new ArgumentNullException("_sprites are null");
+            if (_sprites == null || _sprites.Length == 0) throw new ArgumentNullException("_sprites are empty");
             if (_background == null) throw new ArgumentNullException("_background is null");
             if (_camera == null) throw new ArgumentNullException("_camera is null");
 
@@ -44,10 +44,25 @@ namespace TileBeat.scripts.Managers
                     NodeYSize = Math.Max(NodeYSize, tSize.Y);
                 }
 
-            _background.Position = _camera.Position;
-
             float TotalGridSizeX = _xSize * (NodeXSize + _tileMargin) + _tileMargin;
             float TotalGridSizeY = _ySize * (NodeYSize + _tileMargin) + _tileMargin;
+
+            float startOfGridX = -TotalGridSizeX / 2 - NodeXSize / 2 + _tileMargin;
+            float startOfGridY = -TotalGridSizeY / 2 - NodeYSize / 2 + _tileMargin;
+
+            for (int i = 0; i < _sprites.GetLength(0); i++)
+                for (int j = 0; j < _sprites.GetLength(1); j++)
+                {
+                    Sprite2D sprite = (Sprite2D) _sprites[i, j].Duplicate();
+                    sprite.Position = new Vector2(
+                        startOfGridX + NodeXSize * i + NodeXSize / 2 + (_tileMargin * i),
+                        startOfGridY + NodeYSize * j + NodeYSize / 2 + (_tileMargin * j)
+                    );
+
+                    AddChild(sprite);
+                }
+
+            // set camera position to grid center
 
             Vector2 viewportsize = _camera.GetViewport().GetVisibleRect().Size;
 
@@ -63,22 +78,11 @@ namespace TileBeat.scripts.Managers
                 1 / zoom
             ));
 
-            float startOfGridX = _camera.Position.X + (-TotalGridSizeX / 2 - NodeXSize / 2 + _tileMargin);
-            float startOfGridY = _camera.Position.Y + (-TotalGridSizeY / 2 - NodeYSize / 2 + _tileMargin);
-
-            for (int i = 0; i < _sprites.GetLength(0); i++)
-                for (int j = 0; j < _sprites.GetLength(1); j++)
-                {
-                    Sprite2D sprite = _sprites[i, j];
-                    sprite.Position = new Vector2(
-                        startOfGridX + NodeXSize * i + NodeXSize / 2 + (_tileMargin * i),
-                        startOfGridY + NodeYSize * j + NodeYSize / 2 + (_tileMargin * j)
-                    );
-
-                    AddChild(sprite);
-                }
+            _background.Position = _camera.Position;
 
             AddChild(_background);
+
+
 
         }
     }
