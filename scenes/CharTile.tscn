@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://c2saxy2anqll3"]
+
+[sub_resource type="Gradient" id="Gradient_2o4o2"]
+offsets = PackedFloat32Array(0.255474, 0.718978)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_87a7y"]
+noise_type = 0
+seed = 1
+offset = Vector3(-245, 0, 0)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0v22k"]
+width = 99
+height = 99
+color_ramp = SubResource("Gradient_2o4o2")
+noise = SubResource("FastNoiseLite_87a7y")
+
+[sub_resource type="CSharpScript" id="CSharpScript_qwxnd"]
+script/source = "using Godot;
+using System;
+
+public partial class CharTile : Sprite2D
+{
+}
+"
+
+[node name="character" type="Sprite2D"]
+texture = SubResource("NoiseTexture2D_0v22k")
+script = SubResource("CSharpScript_qwxnd")
