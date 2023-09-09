@@ -6,7 +6,7 @@ namespace TileBeat.scripts.BeatSystem.BeatSystemGodot.Track.Loader
 {
     internal class TrackLoader : IAudioLoader<GodotTrack>
     {
-        public GodotTrack Load(string path, int bpm)
+        public GodotTrack Load(string path, int bpm, float volume)
         {
             AudioStream audioStream = AudioStreamLoader.LoadAudio(path);
             return new GodotTrack(audioStream, bpm);

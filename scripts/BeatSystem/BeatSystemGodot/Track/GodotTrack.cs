@@ -4,6 +4,7 @@ using System;
 
 namespace TileBeat.scripts.BeatSystem.BeatSystemGodot.Track
 {
+
     internal record GodotTrack(AudioStream audioStream, int bpm) : HasBpm, HasFullLength
     {
         private double fullLength = audioStream.GetLength();
