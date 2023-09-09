@@ -57,9 +57,6 @@ namespace TileBeat.scripts.Managers
                     AddChild(sprite);
                 }
 
-            float TotalGridSizeX = _xSize * (NodeXSize + _tileMargin) + _tileMargin;
-            float TotalGridSizeY = _ySize * (NodeYSize + _tileMargin) + _tileMargin;
-
             _camera.Position = new Vector2(
                  start.X - (_tileMargin / 2 + NodeXSize) / 2 + (NodeXSize + _tileMargin) / 2 * _xSize,
                  start.Y - (_tileMargin / 2 + NodeYSize) / 2 + (NodeYSize + _tileMargin) / 2 * _ySize
@@ -67,7 +64,10 @@ namespace TileBeat.scripts.Managers
 
            Vector2 viewportsize = _camera.GetViewport().GetVisibleRect().Size;
 
-            float zoom = Math.Min(viewportsize.X / TotalGridSizeX, viewportsize.Y / TotalGridSizeY);
+            float zoom = Math.Min(
+                viewportsize.X / (_xSize * (NodeXSize + _tileMargin) + _tileMargin),
+                viewportsize.Y / (_ySize * (NodeYSize + _tileMargin) + _tileMargin)
+            );
 
             _camera.Zoom = new Vector2(
                 zoom,
@@ -87,6 +87,3 @@ namespace TileBeat.scripts.Managers
         }
     }
 }
-
-// 144
-// 32
