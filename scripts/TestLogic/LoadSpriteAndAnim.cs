@@ -20,7 +20,7 @@ public partial class LoadSpriteAndAnim : Node
 		AnimatedSprite2D animatedSprite2D = new AnimatedSprite2D();
 		animatedSprite2D.SpriteFrames = new SpriteFrames();
 
-		SpriteLoader.LoadAnimation(animatedSprite2D, "testAnim", 1f, sprites);
+		SpriteLoader.LoadAnimation(animatedSprite2D, "testAnim", 1f, sprites, 1);
 		animatedSprite2D.SpriteFrames.SetAnimationLoop("testAnim", true);
 		AddChild(animatedSprite2D);
 		animatedSprite2D.Play("testAnim");

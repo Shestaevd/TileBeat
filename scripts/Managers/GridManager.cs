@@ -44,27 +44,28 @@ namespace TileBeat.scripts.Managers
                     NodeYSize = Math.Max(NodeYSize, tSize.Y);
                 }
 
-            float TotalGridSizeX = _xSize * (NodeXSize + _tileMargin) + _tileMargin;
-            float TotalGridSizeY = _ySize * (NodeYSize + _tileMargin) + _tileMargin;
-
-            float startOfGridX = -TotalGridSizeX / 2 - NodeXSize / 2 + _tileMargin;
-            float startOfGridY = -TotalGridSizeY / 2 - NodeYSize / 2 + _tileMargin;
+            Vector2 start = _sprites[0,0].Position;
 
             for (int i = 0; i < _sprites.GetLength(0); i++)
                 for (int j = 0; j < _sprites.GetLength(1); j++)
                 {
                     Sprite2D sprite = (Sprite2D) _sprites[i, j].Duplicate();
                     sprite.Position = new Vector2(
-                        startOfGridX + NodeXSize * i + NodeXSize / 2 + (_tileMargin * i),
-                        startOfGridY + NodeYSize * j + NodeYSize / 2 + (_tileMargin * j)
+                        start.X + NodeXSize * i + i * _tileMargin,
+                        start.X + NodeYSize * j + j * _tileMargin
                     );
-
                     AddChild(sprite);
                 }
 
-            // set camera position to grid center
+            float TotalGridSizeX = _xSize * (NodeXSize + _tileMargin) + _tileMargin;
+            float TotalGridSizeY = _ySize * (NodeYSize + _tileMargin) + _tileMargin;
 
-            Vector2 viewportsize = _camera.GetViewport().GetVisibleRect().Size;
+            _camera.Position = new Vector2(
+                 start.X - (_tileMargin / 2 + NodeXSize) / 2 + (NodeXSize + _tileMargin) / 2 * _xSize,
+                 start.Y - (_tileMargin / 2 + NodeYSize) / 2 + (NodeYSize + _tileMargin) / 2 * _ySize
+            );
+
+           Vector2 viewportsize = _camera.GetViewport().GetVisibleRect().Size;
 
             float zoom = Math.Min(viewportsize.X / TotalGridSizeX, viewportsize.Y / TotalGridSizeY);
 
@@ -73,18 +74,19 @@ namespace TileBeat.scripts.Managers
                 zoom
             );
 
+            Vector2 backgoundSize = _background.Texture.GetSize();
+
             _background.ApplyScale(new Vector2(
-                1 / zoom,
-                1 / zoom
+                viewportsize.X / backgoundSize.X,
+                viewportsize.Y / backgoundSize.Y
             ));
 
             _background.Position = _camera.Position;
 
             AddChild(_background);
-
-
-
         }
     }
 }
 
+// 144
+// 32
