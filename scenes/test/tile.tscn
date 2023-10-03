@@ -1,6 +1,23 @@
-[gd_scene load_steps=2 format=3 uid="uid://b0udgchpr468s"]
+[gd_scene load_steps=3 format=3 uid="uid://b0udgchpr468s"]
 
 [ext_resource type="Texture2D" uid="uid://d3ds6off4ac23" path="res://icon.svg" id="1_ypvfd"]
+[ext_resource type="Texture2D" uid="uid://b6i4e0838ikw2" path="res://assets/test/download.png" id="2_osbyx"]
 
 [node name="Sprite2D" type="Sprite2D"]
 texture = ExtResource("1_ypvfd")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_left = 256.0
+offset_top = 1056.0
+offset_right = 448.0
+offset_bottom = 1120.0
+texture = ExtResource("2_osbyx")
+expand_mode = 1
+stretch_mode = 6

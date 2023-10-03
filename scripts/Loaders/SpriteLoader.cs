@@ -13,7 +13,9 @@ namespace TileBeat.scripts.Loaders
 			sprite.Texture = texture;
 			sprite.YSortEnabled = true;
 			sprite.ZIndex = ordering;
-			return sprite;
+			sprite.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
+
+            return sprite;
 		}
 
 		public static void LoadAnimation(AnimatedSprite2D animatedSprite, string animName, float frameDuration, string[] path, int ordering) 

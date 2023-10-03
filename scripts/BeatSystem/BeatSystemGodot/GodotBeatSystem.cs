@@ -9,7 +9,7 @@ namespace TileBeat.scripts.BeatSystem.BeatSystemGodot
 	internal class GodotBeatSystem : IAudioBeatSystem<GodotTrack>
 	{
 		private GodotTrack _track;
-		private double _interval;
+		private float _interval;
 		private AudioStreamPlayer2D _player;
 		public GodotBeatSystem(GodotTrack track, AudioStreamPlayer2D player) 
 		{
@@ -19,17 +19,17 @@ namespace TileBeat.scripts.BeatSystem.BeatSystemGodot
 			
 			_player.Stream = _track.audioStream;
 		}
-		public double GetInterval()
+		public float GetInterval()
 		{
 			return _interval;
 		}
 
-		public double GetPlaybackPosition()
+		public float GetPlaybackPosition()
 		{
 			return _player.GetPlaybackPosition();
 		}
 
-		public double InTargetOfBeat()
+		public float InTargetOfBeat()
 		{
 			return Utils.FindTargetBeat(_track.GetFullLength(), _interval);
 		}
@@ -49,9 +49,14 @@ namespace TileBeat.scripts.BeatSystem.BeatSystemGodot
 			_player.Seek(position);
 		}
 
-		public void SetVolume(double volume)
+		public void SetVolume(float volume)
 		{
 			_player.VolumeDb = (float) volume;
+		}
+
+		public float GetVolume()
+		{
+			return _player.VolumeDb;
 		}
 
 		public void Stop()
@@ -59,7 +64,7 @@ namespace TileBeat.scripts.BeatSystem.BeatSystemGodot
 			_player.Stop();
 		}
 
-		public double UntilNextBeat()
+		public float UntilNextBeat()
 		{
 			return _interval - (GetPlaybackPosition() % _interval);
 		}

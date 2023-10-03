@@ -5,16 +5,16 @@ using System;
 namespace TileBeat.scripts.BeatSystem.BeatSystemGodot.Track
 {
 
-    internal record GodotTrack(AudioStream audioStream, int bpm) : HasBpm, HasFullLength
+    public record GodotTrack(AudioStream audioStream, int bpm) : HasBpm, HasFullLength
     {
-        private double fullLength = audioStream.GetLength();
+        private float fullLength = (float) audioStream.GetLength();
 
         public int GetBpm()
         {
             return bpm;
         }
 
-        public double GetFullLength()
+        public float GetFullLength()
         {
             return fullLength;
         }

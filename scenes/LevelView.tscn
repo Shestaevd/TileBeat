@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://bu8qdn0ftpygs"]
+[gd_scene load_steps=4 format=3 uid="uid://cnuutaydnotyd"]
 
-[ext_resource type="Script" path="res://scripts/LevelView.cs" id="1_4e4fh"]
+[ext_resource type="Script" path="res://scripts/TestLogic/LevelView.cs" id="1_rsx5n"]
 
 [sub_resource type="Gradient" id="Gradient_e847f"]
 offsets = PackedFloat32Array(0, 0.5, 1)
@@ -10,7 +10,7 @@ colors = PackedColorArray(0, 0, 0.380392, 1, 0.631373, 1, 1, 1, 0, 0, 0.380392, 
 gradient = SubResource("Gradient_e847f")
 
 [node name="LevelView" type="Node2D"]
-script = ExtResource("1_4e4fh")
+script = ExtResource("1_rsx5n")
 
 [node name="background" type="Sprite2D" parent="."]
 scale = Vector2(10.2969, 18.0313)
