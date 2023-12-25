@@ -1,8 +1,10 @@
 using Godot;
+using System.Collections.Generic;
 using TileBeat.scripts.BeatSystem.BeatSystemGodot.Track;
 using TileBeat.scripts.BeatSystem.BeatSystemGodot.Track.Loader;
 using TileBeat.scripts.Loaders;
 using TileBeat.scripts.Managers;
+using TileBeat.scripts.Managers.Beat;
 
 namespace TileBeat.scripts.TestLogic
 {
@@ -32,16 +34,22 @@ namespace TileBeat.scripts.TestLogic
 			Camera2D camera = GetNode<Camera2D>("Camera2D");
 			CanvasLayer canvasLayer = GetNode<CanvasLayer>("CanvasLayer");
 
-			GridManager gm = new GridManager(20, sprites);
+			//GridManager gm = new GridManager(20, sprites);
 			GD.Print(camera.GetViewport().GetVisibleRect().Size.X);
-            //BeatManager bm = new BeatManager(camera.GetViewport().GetVisibleRect().Size.X, gt, beatBox.Texture, beatMarker.Texture, canvasLayer, 2, 0.3f);
+			
+			Queue<AbstractBeat> beats = new Queue<AbstractBeat>();
+			for (uint i = 0; i < 100; i++) beats.Enqueue(new Beat(beatMarker.Texture, i));
 
-            camera.Position = gm.GridCenter;
+            BeatManager bm = new BeatManager(canvasLayer, gt, beatBox.Texture, beatMarker.Texture, beats, 3);
+			
+            //camera.Position = gm.GridCenter;
 
             camera.Zoom = new Vector2(0.09f, 0.09f);
 
-			AddChild(gm);
-			//AddChild(bm);
+			bm.SetVolume(0.0f);
+
+			//AddChild(gm);
+			AddChild(bm);
 			
 		}
 	}

@@ -59,7 +59,7 @@ namespace TileBeat.scripts.BeatSystem.BeatSystemGodot
 			return _player.VolumeDb;
 		}
 
-		public void Stop()
+		public void Reset()
 		{
 			_player.Stop();
 		}
