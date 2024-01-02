@@ -22,7 +22,7 @@ namespace TileBeat.scripts.Managers.Beat
             _showBeats = showBeats;
 
             if (showBeats == 0) showBeats = 1;
-            if (showBeats > 10) showBeats = 10; // i don't see any reason to show more then 10 beat markers at one time
+            if (showBeats > 10) showBeats = 10; // i don't see any reason to show more then 10 beat markers at a time
 
             for (uint beats = 1; beats <= showBeats; beats++)
             {
@@ -34,7 +34,7 @@ namespace TileBeat.scripts.Managers.Beat
         {
             foreach (AbstractBeat beat in _inPlay)
             {
-                beat.Move(delta);
+                beat.Move(delta, center);
             }
             
             if (_inPlay.TryPeek(out AbstractBeat currentBeat) && currentBeat.IsExpired())
@@ -45,7 +45,7 @@ namespace TileBeat.scripts.Managers.Beat
 
                 if (_queue.TryDequeue(out AbstractBeat nextBeat))
                 {
-                    nextBeat.Spawn(_root, _interval * _showBeats, viewportX, center, spriteSizeY);
+                    nextBeat.Spawn(_root, _interval * _showBeats, viewportX, spriteSizeY);
                     _inPlay.Enqueue(nextBeat);
                 }
             }

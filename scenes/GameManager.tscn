@@ -1,27 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://bu6d8jafugvaw"]
+[gd_scene load_steps=2 format=3 uid="uid://bu6d8jafugvaw"]
 
 [ext_resource type="Script" path="res://scripts/TestLogic/LevelMakerTest.cs" id="1_arvdw"]
-[ext_resource type="Texture2D" uid="uid://brublr1qvhc6e" path="res://assets/test/beat_box.png" id="2_cppnr"]
 
 [node name="Root" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("1_arvdw")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="BeatBox" type="TextureRect" parent="CanvasLayer"]
-anchors_preset = -1
-anchor_left = 0.499597
-anchor_top = 0.889
-anchor_right = 0.5
-anchor_bottom = 0.889
-offset_left = 0.464233
-offset_top = -8.07202
-offset_bottom = 15.928
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("2_cppnr")
-expand_mode = 1
-stretch_mode = 6
 
 [node name="Camera2D" type="Camera2D" parent="."]

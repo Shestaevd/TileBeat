@@ -35,12 +35,11 @@ namespace TileBeat.scripts.TestLogic
 			CanvasLayer canvasLayer = GetNode<CanvasLayer>("CanvasLayer");
 
 			//GridManager gm = new GridManager(20, sprites);
-			GD.Print(camera.GetViewport().GetVisibleRect().Size.X);
 			
 			Queue<AbstractBeat> beats = new Queue<AbstractBeat>();
 			for (uint i = 0; i < 100; i++) beats.Enqueue(new Beat(beatMarker.Texture, i));
 
-            BeatManager bm = new BeatManager(canvasLayer, gt, beatBox.Texture, beatMarker.Texture, beats, 3);
+            BeatManager bm = new BeatManager(30f, 10f, canvasLayer, gt, beatBox.Texture, beatMarker.Texture, beats, 6);
 			
             //camera.Position = gm.GridCenter;
 

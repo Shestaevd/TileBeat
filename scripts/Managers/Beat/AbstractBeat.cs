@@ -18,7 +18,7 @@ namespace TileBeat.scripts.Managers.Beat
             Index = index;
         }
 
-        public virtual void Move(double delta)
+        public virtual void Move(double delta, Vector2 center)
         {
             _currentTime += (float) delta;
         }
@@ -31,7 +31,7 @@ namespace TileBeat.scripts.Managers.Beat
             return _targetTime - _currentTime;
         }
         public virtual void Clear() { }
-        public virtual void Spawn(Node parent, float targetTime, float viewportX, Vector2 center, float spriteSizeY) { }
+        public virtual void Spawn(Node parent, float targetTime, float viewportX, float spriteSizeY) { }
     }
 
     public class EmptyBeat : AbstractBeat
@@ -53,25 +53,25 @@ namespace TileBeat.scripts.Managers.Beat
         public Beat(Texture2D sprite, uint index) : base(index)
         {
             TextureRect spriteRect = new TextureRect();
+            spriteRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
             spriteRect.Texture = sprite;
             
             _sprite = (TextureRect) spriteRect.Duplicate();
             _spriteTwin = (TextureRect) spriteRect.Duplicate();
             _spriteTwin.FlipV = true;
-            
         }
 
 
 
-        public override void Move(double delta)
+        public override void Move(double delta, Vector2 center)
         {
-            _sprite.Size = new Vector2(_sprite.Size.X, _spriteSizeY);
-            _spriteTwin.Size = new Vector2(_sprite.Size.X, _spriteSizeY);
-            Vector2 start = new Vector2(_center.X - _viewportX / 2, _center.Y);
-            Vector2 startTwin = new Vector2(_center.X + _viewportX / 2, _center.Y);
+            _sprite.Size = new Vector2(_sprite.Texture.GetWidth(), _spriteSizeY);
+            _spriteTwin.Size = new Vector2(_sprite.Texture.GetWidth(), _spriteSizeY);
+            Vector2 start = new Vector2(center.X - _viewportX / 2, center.Y);
+            Vector2 startTwin = new Vector2(center.X + _viewportX / 2, center.Y);
             _currentTime += (float) delta;
-            _sprite.Position = start.Lerp(_center, _currentTime / _targetTime);
-            _spriteTwin.Position = startTwin.Lerp(_center, _currentTime / _targetTime);
+            _sprite.Position = start.Lerp(center, _currentTime / _targetTime);
+            _spriteTwin.Position = startTwin.Lerp(center, _currentTime / _targetTime);
         }
 
         public override void Clear()
@@ -83,10 +83,9 @@ namespace TileBeat.scripts.Managers.Beat
             }
         }
 
-        public override void Spawn(Node parent, float targetTime, float viewportX, Vector2 center, float spriteSizeY)
+        public override void Spawn(Node parent, float targetTime, float viewportX, float spriteSizeY)
         {
             _targetTime = targetTime;
-            _center = center;
             _spriteSizeY = spriteSizeY;
             _viewportX = viewportX;
             parent.AddChild(_sprite);
