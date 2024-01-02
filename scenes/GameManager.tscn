@@ -7,5 +7,3 @@ y_sort_enabled = true
 script = ExtResource("1_arvdw")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="Camera2D" type="Camera2D" parent="."]

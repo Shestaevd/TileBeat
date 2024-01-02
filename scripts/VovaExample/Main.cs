@@ -1,30 +1,72 @@
-//using BeatSystem;
-//using BeatSystem.BeatSystemGodot;
-//using BeatSystem.BeatSystemGodot.Track;
-//using BeatSystem.BeatTrackingSystem.Domain.Utils;
-//using BeatSystem.scripts.BeatSystem.Domain.Track;
 //using Godot;
+//using System;
+//using System.Collections.Generic;
 
-//public partial class Main : Node
+//public partial class Main : Node2D
 //{
-//	private BeatGUI _BeatGUI;
+//	public const int MaxCount = 20;
 
-//	public static Main Root { get; private set; }
+//	public List<Beat> Beats { get; set; }
 
+//	// Called when the node enters the scene tree for the first time.
 //	public override void _Ready()
 //	{
-//		Root = this;
+//		Beats = new List<Beat>();
+//	}
 
-//		AudioStreamPlayer player = new AudioStreamPlayer();
-//		player.VolumeDb = -20;
-//		AddChild(player);
+//	// Called every frame. 'delta' is the elapsed time since the previous frame.
+//	public override void _Process(double delta)
+//	{
+//		Beats.ForEach(x => x.Update((float)delta));
+//		QueueRedraw();
+//		Beats.RemoveAll(x => x.ReadyToDelete);
+//	}
 
-//		_BeatGUI = new BeatGUI(
-//			new GodotBeatSystem(new GodotTrack(GD.Load<AudioStream>("res://Deep_House_Summer_Vibes.mp3"), 120), player),
-//			GD.Load<Texture2D>("res://Icon.svg"));
+//    public override void _Input(InputEvent input)
+//    {
+//		if (input is InputEventKey key && key.Pressed && key.Keycode == Key.Space)
+//			Beats.Add(new Beat(2));
+//    }
 
-//		_BeatGUI.HitTarget += () => GD.Print("Hit");
+//    public override void _Draw()
+//    {
+//        float width = GetViewportRect().Size.X;
+//        float heigth = GetViewportRect().Size.Y;
 
-//		AddChild(_BeatGUI);
+//		float beatWidth = width / MaxCount * 0.5f;
+
+//        for(int i = 0; i <  Beats.Count; i++)
+//		{
+//			Rect2 rect = new Rect2();
+//			rect.Size = new Vector2(beatWidth, 30);
+//			rect.Position = new Vector2(Beats[i].Delta * (width / 2), heigth - 30);
+
+//			DrawRect(rect, Colors.Green);
+
+//			rect.Position = new Vector2((1 - Beats[i].Delta) * (width / 2) + width * 0.5f, heigth - 30);
+//            DrawRect(rect, Colors.Green);
+//        }
+//    }
+//}
+
+//public class Beat
+//{
+//    private float _TargetTime;
+//    private float _CurrentDelta;
+
+//	public bool ReadyToDelete
+//		=> _TargetTime <= _CurrentDelta;
+
+//    public Beat(float targetTime)
+//    {
+//        _TargetTime = targetTime;
+//    }
+
+//    public float Delta { get; private set; }
+
+//    public void Update(float delta)
+//	{
+//		_CurrentDelta += delta;
+//		Delta = _CurrentDelta / _TargetTime;
 //	}
 //}

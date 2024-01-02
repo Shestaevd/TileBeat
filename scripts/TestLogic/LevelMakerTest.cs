@@ -31,19 +31,19 @@ namespace TileBeat.scripts.TestLogic
 					sprites[i, j] = sprite;
 				}
 
-			Camera2D camera = GetNode<Camera2D>("Camera2D");
+			//Camera2D camera = GetNode<Camera2D>("Camera2D");
 			CanvasLayer canvasLayer = GetNode<CanvasLayer>("CanvasLayer");
 
 			//GridManager gm = new GridManager(20, sprites);
 			
 			Queue<AbstractBeat> beats = new Queue<AbstractBeat>();
-			for (uint i = 0; i < 100; i++) beats.Enqueue(new Beat(beatMarker.Texture, i));
+			for (uint i = 0; i < 100; i++) beats.Enqueue(new Beat(i));
 
-            BeatManager bm = new BeatManager(30f, 10f, canvasLayer, gt, beatBox.Texture, beatMarker.Texture, beats, 6);
+            BeatManager bm = new BeatManager(30f, 10f, canvasLayer, gt, beatBox.Texture, beatMarker.Texture, beats, 3);
 			
             //camera.Position = gm.GridCenter;
 
-            camera.Zoom = new Vector2(0.09f, 0.09f);
+            //camera.Zoom = new Vector2(0.09f, 0.09f);
 
 			bm.SetVolume(0.0f);
 

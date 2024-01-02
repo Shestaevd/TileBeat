@@ -1,6 +1,7 @@
 ﻿using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TileBeat.scripts.Managers.Beat
 {
@@ -10,14 +11,14 @@ namespace TileBeat.scripts.Managers.Beat
 
         private Queue<AbstractBeat> _queue;
         private Queue<AbstractBeat> _inPlay = new Queue<AbstractBeat>();
-        private CanvasLayer _root;
+        private BeatDrawer _drawer;
         private float _interval;
         private float _showBeats;
 
-        public BeatQueue(Queue<AbstractBeat> queue, float interval, uint showBeats, CanvasLayer root)
+        public BeatQueue(Queue<AbstractBeat> queue, float interval, uint showBeats, BeatDrawer drawer)
         {
             _queue = queue;
-            _root = root;
+            _drawer = drawer;
             _interval = interval;
             _showBeats = showBeats;
 
@@ -26,26 +27,37 @@ namespace TileBeat.scripts.Managers.Beat
 
             for (uint beats = 1; beats <= showBeats; beats++)
             {
-                _inPlay.Enqueue(new EmptyBeat(interval * beats, uint.MaxValue)); // initialize track with empty beats
+                AbstractBeat beat = new EmptyBeat(uint.MaxValue);
+                beat.Spawn(interval * beats);
+                _inPlay.Enqueue(beat); // initialize track with empty beats
             }
         }
 
-        public bool Play(double delta, float viewportX, Vector2 center, float spriteSizeY)
+        public bool Play(double delta, float viewportX, Vector2 center)
         {
-            foreach (AbstractBeat beat in _inPlay)
+            List<Vector2> positions = new List<Vector2>();
+            foreach (AbstractBeat aBeat in _inPlay)
             {
-                beat.Move(delta, center);
+                aBeat.Move(delta);
+                if (aBeat is Beat beat)
+                {
+                    Tuple<Vector2, Vector2> newPos = beat.GetPosition(center, viewportX);
+                    positions.Add(newPos.Item1);
+                    positions.Add(newPos.Item2);
+                }
+                   
             }
-            
+
+            _drawer.UpdateBeatsPositions(positions);
+
             if (_inPlay.TryPeek(out AbstractBeat currentBeat) && currentBeat.IsExpired())
             {
                 OnBeat?.Invoke(currentBeat.Index);
-                currentBeat.Clear();
                 _inPlay.Dequeue();
 
                 if (_queue.TryDequeue(out AbstractBeat nextBeat))
                 {
-                    nextBeat.Spawn(_root, _interval * _showBeats, viewportX, spriteSizeY);
+                    nextBeat.Spawn(_interval * _showBeats);
                     _inPlay.Enqueue(nextBeat);
                 }
             }

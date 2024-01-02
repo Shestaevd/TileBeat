@@ -1,6 +1,7 @@
 using BeatSystem.scripts.BeatSystem.Domain.System;
 using Godot;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -17,16 +18,18 @@ namespace TileBeat.scripts.Managers.Beat
 		private Texture2D _hitZone;
 		private TextureRect _beatBox;
         private CanvasLayer _canvasLayer;
-        private float _accuracy;
-		private uint _visibleBeats;
-        private float _interval;
         private BeatQueue _beatQueue;
+        private BeatDrawer _beatDrawer;
+        private Queue<AbstractBeat> _queue;
+
         private Vector2 _beatPosition;
         private Vector2 _viewportCenter;
 
-        private Vector2 _beatBoxCenter;
         private float _bottomOffset;
         private float _ySize;
+        private float _accuracy;
+        private float _interval;
+        private uint _visibleBeats;
 
         public BeatManager(
             float bottomOffset,
@@ -40,6 +43,7 @@ namespace TileBeat.scripts.Managers.Beat
             float accuracy = 0.5f //   from 0 to 1
         )
 		{
+            _queue = queue;
             _hitZone = hitZone;
             _track = track;
 			_marker = marker;
@@ -49,58 +53,23 @@ namespace TileBeat.scripts.Managers.Beat
             _canvasLayer = canvas;
             _bottomOffset = bottomOffset;
             _ySize = ySize;
-
             Stream = _track.audioStream;
-
-            _beatQueue = new BeatQueue(queue, _interval, visibleBeats, canvas); // generate and move beat sprites
-
-            Subscribe(i => { 
-                if (i == 0)
-                { 
-                    Play();
-                    GD.Print("track started"); 
-                } 
-            });
         }
 
         public override void _Ready()
 		{
+            _beatDrawer = new BeatDrawer(_hitZone, _marker, _ySize, _visibleBeats, _accuracy, _bottomOffset);
+            _beatQueue = new BeatQueue(_queue, _interval, _visibleBeats, _beatDrawer); // generate and move beat sprites
 
-            float viewportXCenter = GetViewportRect().Size.X * 0.5f;
-            float viewportYBottom = GetViewportRect().Size.Y;
-            _beatBoxCenter = new Vector2(viewportXCenter, viewportYBottom - _bottomOffset);
+            AddChild(_beatDrawer);
 
-            float cameraX = viewportSizeX();
-            float beatBoxXSize = cameraX / _visibleBeats * _accuracy;
-
-            TextureRect bb = new TextureRect();
-
-            bb.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
-            bb.StretchMode = TextureRect.StretchModeEnum.Scale;
-            bb.Texture = _hitZone;
-            bb.Size = new Vector2(beatBoxXSize, _ySize);
-            bb.Position = _beatBoxCenter - new Vector2(bb.Size.X * 0.5f, 0);
-
-            _canvasLayer.AddChild(bb);
-
-            //_beatPosition = _beatBox.Position;
-            //_beatBox.Position = new Vector2(viewportCenter() - beatBoxXSize * 0.5f, _beatBox.Position.Y);
-            //_beatBox.Size = new Vector2(beatBoxXSize, _beatBox.Size.Y);
-
-
-            //_beatBox.Resized += () =>
-            //{
-            //    _viewportXCenter = GetViewportRect().Size.X * 0.5f;
-            //    _viewportYBottom = GetViewportRect().Size.Y;
-            //    _beatBoxCenter = new Vector2(_viewportXCenter, _viewportYBottom - _bottomOffset);
-
-            //    float cameraX = viewportSizeX();
-            //    float beatBoxXSize = cameraX / _visibleBeats * _accuracy;
-
-            //    //_beatPosition = _beatBox.Position;
-            //    //_beatBox.Position = new Vector2(viewportCenter() - beatBoxXSize * 0.5f, _beatBox.Position.Y);
-            //    //_beatBox.Size = new Vector2(beatBoxXSize, _beatBox.Size.Y);
-            //};
+            Subscribe(i => {
+                if (i == 0)
+                {
+                    Play();
+                    GD.Print("track started");
+                }
+            });
         }
 
         public void Subscribe(Action<uint> action)
@@ -110,7 +79,10 @@ namespace TileBeat.scripts.Managers.Beat
 
         public override void _Process(double delta)
         {
-            _beatQueue.Play(delta, viewportSizeX(), _beatBoxCenter, _ySize);
+            float viewportXCenter = viewportCenter();
+            float viewportYBottom = GetViewportRect().Size.Y;
+            Vector2 beatBoxCenter = new Vector2(viewportXCenter, viewportYBottom - _bottomOffset);
+            _beatQueue.Play(delta, viewportSizeX(), beatBoxCenter);
         }
 
         private float viewportSizeX() // can be const
@@ -120,7 +92,7 @@ namespace TileBeat.scripts.Managers.Beat
 
         private float viewportCenter() // can be const
         {
-            return GetViewportRect().Size.X / 2;
+            return viewportSizeX() * 0.5f;
         }
 
         private int currentInterval()
