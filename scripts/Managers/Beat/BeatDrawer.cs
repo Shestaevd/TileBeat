@@ -7,7 +7,6 @@ namespace TileBeat.scripts.Managers.Beat
     {
 
         float _visibleBeats;
-        float _accuracy;
         float _ySize;
         float _bottomOffset;
 
@@ -19,7 +18,7 @@ namespace TileBeat.scripts.Managers.Beat
         public override void _Draw()
         {
             float cameraX = GetViewportRect().Size.X;
-            float beatBoxXSize = cameraX / _visibleBeats * _accuracy;
+            float beatBoxXSize = cameraX / _visibleBeats;
 
             float viewportXCenter = cameraX * 0.5f;
             float viewportYBottom = GetViewportRect().Size.Y;
@@ -39,16 +38,15 @@ namespace TileBeat.scripts.Managers.Beat
         }
 
 
-        public void UpdateBeatsPositions(List<Vector2> beats)
+        public void UpdateBeatPositions(List<Vector2> beats)
         {
             _beats = beats;
         }
 
-        public BeatDrawer(Texture2D hitBox, Texture2D hitMarker, float ySize, float visibleBeats, float accuracy, float bottomOffset) 
+        public BeatDrawer(Texture2D hitBox, Texture2D hitMarker, float ySize, float visibleBeats, float bottomOffset) 
         {
             _visibleBeats = visibleBeats;
             _bottomOffset = bottomOffset;
-            _accuracy = accuracy;
             _ySize = ySize;
             _beatMarkerTexture = hitMarker;
             _beatBoxTexture = hitBox;

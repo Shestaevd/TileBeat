@@ -1,72 +1,63 @@
 using BeatSystem.scripts.BeatSystem.Domain.System;
 using Godot;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
+using System.Linq;
 using TileBeat.scripts.BeatSystem.BeatSystemGodot.Track;
 using TileBeat.scripts.BeatSystem.BeatTrackingSystem.Domain.Utils;
 
 namespace TileBeat.scripts.Managers.Beat
 {
+
 	public partial class BeatManager : AudioStreamPlayer2D, IAudioBeatSystem<GodotTrack>
 	{
+        private event Action<uint> OnBeat;
 
-        private GodotTrack _track;
-		private Texture2D _marker;
-		private Texture2D _hitZone;
-		private TextureRect _beatBox;
-        private CanvasLayer _canvasLayer;
-        private BeatQueue _beatQueue;
         private BeatDrawer _beatDrawer;
-        private Queue<AbstractBeat> _queue;
 
         private Vector2 _beatPosition;
         private Vector2 _viewportCenter;
+        private LinkedList<AbstractBeat> _inPlay = new LinkedList<AbstractBeat>();
+        private Queue<AbstractBeat> _queue;
 
+        private int _lastInterval = 0;
         private float _bottomOffset;
         private float _ySize;
-        private float _accuracy;
         private float _interval;
         private uint _visibleBeats;
 
+        AudioStreamPlayer _player;
         public BeatManager(
             float bottomOffset,
             float ySize,
-            CanvasLayer canvas, //	should have TextureRec named "BeatBox". 		
             GodotTrack track,
             Texture2D hitZone,
             Texture2D marker,
             Queue<AbstractBeat> queue,
-            uint visibleBeats = 3,
-            float accuracy = 0.5f //   from 0 to 1
+            AudioStreamPlayer test,
+            uint visibleBeats = 3
+            
         )
 		{
             _queue = queue;
-            _hitZone = hitZone;
-            _track = track;
-			_marker = marker;
-            _accuracy = accuracy;
-            _visibleBeats = visibleBeats == 0 ? 1 : visibleBeats;
+           _player = test;
+            _visibleBeats = visibleBeats == 0 ? 1 : visibleBeats > 10 ? 10 : visibleBeats;
             _interval = Utils.FindInterval(track.GetFullLength(), track.GetBpm());
-            _canvasLayer = canvas;
             _bottomOffset = bottomOffset;
             _ySize = ySize;
-            Stream = _track.audioStream;
+            Stream = track.audioStream;
+
+            _beatDrawer = new BeatDrawer(hitZone, marker, _ySize, _visibleBeats, _bottomOffset);
         }
+
 
         public override void _Ready()
 		{
-            _beatDrawer = new BeatDrawer(_hitZone, _marker, _ySize, _visibleBeats, _accuracy, _bottomOffset);
-            _beatQueue = new BeatQueue(_queue, _interval, _visibleBeats, _beatDrawer); // generate and move beat sprites
-
             AddChild(_beatDrawer);
 
-            Subscribe(i => {
+            Subscribe(i => { 
                 if (i == 0)
                 {
-                    Play();
                     GD.Print("track started");
                 }
             });
@@ -74,7 +65,7 @@ namespace TileBeat.scripts.Managers.Beat
 
         public void Subscribe(Action<uint> action)
         {
-            _beatQueue.OnBeat += action;
+            OnBeat += action;
         }
 
         public override void _Process(double delta)
@@ -82,20 +73,68 @@ namespace TileBeat.scripts.Managers.Beat
             float viewportXCenter = viewportCenter();
             float viewportYBottom = GetViewportRect().Size.Y;
             Vector2 beatBoxCenter = new Vector2(viewportXCenter, viewportYBottom - _bottomOffset);
-            _beatQueue.Play(delta, viewportSizeX(), beatBoxCenter);
+            List<Vector2> positions = new List<Vector2>();
+
+            foreach (AbstractBeat aBeat in _inPlay)
+            {
+                aBeat.Move(delta);
+
+                if (aBeat is Beat beat)
+                {
+                    Tuple<Vector2, Vector2> newPos = beat.GetPosition(beatBoxCenter, viewportSizeX());
+                    positions.Add(newPos.Item1);
+                    positions.Add(newPos.Item2);
+                }
+            }
+
+            _beatDrawer.UpdateBeatPositions(positions);
+
+            AbstractBeat currentBeat = _inPlay.FirstOrDefault();
+            if (currentBeat != null && currentBeat.IsExpired())
+            {
+                OnBeat?.Invoke(currentBeat.Index);
+                currentBeat.OnBeat?.Invoke();
+                _inPlay.RemoveFirst();
+            }
+
+            int current = CurrentInterval();
+            if (_lastInterval != current)
+            {
+                _lastInterval = current;
+                _queue.TryDequeue(out AbstractBeat aBeat);
+                aBeat.Create(_interval * _visibleBeats, _interval - UntilNextBeat());
+                _inPlay.AddLast(aBeat);
+            }
+
         }
 
-        private float viewportSizeX() // can be const
+        public bool IsInTargetBeat()
+        {
+            return InTargetOfBeat() != 0;
+        }
+
+        public float UseNextBeat()
+        {
+            AbstractBeat currentBeat = _inPlay.FirstOrDefault();
+            if (currentBeat != null && currentBeat is Beat)
+            {
+                _inPlay.First.ValueRef = currentBeat.ToEmptyBeat();
+                return InTargetOfBeat();
+            }
+            return 0f;
+        }
+
+        private float viewportSizeX()
         {
             return GetViewportRect().Size.X;
         }
 
-        private float viewportCenter() // can be const
+        private float viewportCenter()
         {
             return viewportSizeX() * 0.5f;
         }
 
-        private int currentInterval()
+        public int CurrentInterval()
         {
             return (int)(GetPlaybackPosition() / _interval);
         }
@@ -109,7 +148,8 @@ namespace TileBeat.scripts.Managers.Beat
 
         public float InTargetOfBeat()
         {
-            return Utils.FindTargetBeat(_track.GetFullLength(), _interval);
+            float oneP = _interval * 0.01f;
+            return GetPlaybackPosition() % _interval / oneP;
         }
 
         public void SetPlaybackPosition(long position)
@@ -129,7 +169,7 @@ namespace TileBeat.scripts.Managers.Beat
 
         public float UntilNextBeat()
         {
-            return _beatQueue.UntilNextInterval();
+            return _interval - (GetPlaybackPosition() % _interval); ;
         }
 
         public void Pause()
