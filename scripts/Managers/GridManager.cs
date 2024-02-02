@@ -3,7 +3,7 @@ using System;
 
 namespace TileBeat.scripts.Managers
 {
-	public partial class GridManager : Node2D
+	public partial class GridManagerV1 : Node2D
 	{
 		private float _tileMargin;
 
@@ -24,7 +24,7 @@ namespace TileBeat.scripts.Managers
 		{
 			get { return _sprites; }
 		}
-		public GridManager(float tileMargin, Sprite2D[,] sprites)
+		public GridManagerV1(float tileMargin, Sprite2D[,] sprites)
 		{
 			_sprites = sprites;
 			_tileMargin = tileMargin;

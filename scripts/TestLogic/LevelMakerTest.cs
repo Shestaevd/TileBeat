@@ -13,6 +13,7 @@ namespace TileBeat.scripts.TestLogic
 	{
 
 		BeatManager bm;
+        BeatClassicDrawer bcd;
         AudioStreamPlayer kicker;
 		public override void _Ready()
 		{
@@ -23,7 +24,7 @@ namespace TileBeat.scripts.TestLogic
 			Sprite2D sprite = SpriteLoader.LoadSprite("E:\\GodotProjects\\TileBeat\\assets\\test\\tile1024.png", 1);
 			AudioStream audio = AudioStreamLoader.LoadAudio("E:\\GodotProjects\\TileBeat\\assets\\test\\2000s-house-kick-single-shot-g-sharp-key-541-44z.mp3");
 
-            GodotTrack gt = new TrackLoader().Load("E:\\GodotProjects\\TileBeat\\assets/test/01 - Judgement.mp3", 254);
+            GodotTrack gt = new TrackLoader().Load("C:\\Users\\shest\\Downloads\\SXNSTXRM SNOW.mp3", 120);
 
 
             Sprite2D beatBox = SpriteLoader.LoadSprite("E:\\GodotProjects\\TileBeat\\assets\\test\\beat_box.png", 2);
@@ -37,30 +38,28 @@ namespace TileBeat.scripts.TestLogic
 				}
 
 			//Camera2D camera = GetNode<Camera2D>("Camera2D");
-
 			//GridManager gm = new GridManager(20, sprites);
-			
-			Queue<AbstractBeat> beats = new Queue<AbstractBeat>();
-			for (uint i = 0; i < 100; i++) beats.Enqueue(new Beat(i));
 
             kicker = new AudioStreamPlayer();
-            bm = new BeatManager(30f, 10f, gt, beatBox.Texture, beatMarker.Texture, beats, kicker, 8);
 
-			//camera.Position = gm.GridCenter;
+            LinkedList<AbstractBeat> beats = BeatQueueAutoMaker.GenerateBeatsByBpm(gt, 127);
+            bm = new BeatManager(gt, beats);
+            bcd = new BeatClassicDrawer(beatBox.Texture, beatMarker.Texture, 4f, 4, 0.5f, 30f,  bm);
 
-			//camera.Zoom = new Vector2(0.09f, 0.09f);
+            //camera.Position = gm.GridCenter;
+            //camera.Zoom = new Vector2(0.09f, 0.09f);
 
-			bm.VolumeDb -= 10;
+            GD.Print(beats.Count);
 
+			bm.VolumeDb += -10;
+            kicker.VolumeDb += -10;
             //AddChild(gm);
-
-            
-
             kicker.Stream = audio;
             AddChild(kicker);
 			AddChild(bm);
+			AddChild(bcd);
+
             bm.Play();
-            kicker.Play();
         }
 
         public override void _Input(InputEvent @event)
@@ -71,10 +70,10 @@ namespace TileBeat.scripts.TestLogic
                 if (!eventKey.Echo && eventKey.Pressed && eventKey.Keycode == Key.Space)
 				{
                     kicker.Play();
-                    if (bm.IsInTargetBeat())
-                        GD.Print("you got it: " + bm.UseNextBeat());
+                    if (bm.UntilNextBeat() < 0.5f)
+                        GD.Print("you got it: " + bm.UntilNextBeat());
                     else
-                        GD.Print("bad timing: " + bm.UseNextBeat());
+                        GD.Print("bad timing: " + bm.UntilNextBeat());
                 }
                     
             }
@@ -84,7 +83,7 @@ namespace TileBeat.scripts.TestLogic
         public override void _Process(double delta)
         {
 
-			GD.Print(bm.CurrentInterval());
+			
             
         }
     }
