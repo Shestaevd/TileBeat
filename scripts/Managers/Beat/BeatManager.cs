@@ -2,12 +2,11 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TileBeat.scripts.BeatSystem.BeatSystemGodot.Track;
 
 namespace TileBeat.scripts.Managers.Beat
 {
 
-	public partial class BeatManager : AudioStreamPlayer
+    public partial class BeatManager : AudioStreamPlayer
 	{
         private event Action<uint> OnBeat;
         private LinkedList<AbstractBeat> _beats;

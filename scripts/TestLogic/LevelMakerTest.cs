@@ -1,15 +1,11 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
-using TileBeat.scripts.BeatSystem.BeatSystemGodot.Track;
-using TileBeat.scripts.BeatSystem.BeatSystemGodot.Track.Loader;
 using TileBeat.scripts.Loaders;
-using TileBeat.scripts.Managers;
 using TileBeat.scripts.Managers.Beat;
 
 namespace TileBeat.scripts.TestLogic
 {
-	public partial class LevelMakerTest : Node2D
+    public partial class LevelMakerTest : Node2D
 	{
 
 		BeatManager bm;
