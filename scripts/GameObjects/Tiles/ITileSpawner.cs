@@ -2,8 +2,8 @@
 
 namespace TileBeat.scripts.GameObjects.Tiles
 {
-    internal interface ITileSpawner
+    public interface ITileSpawner
     {
-        public void Spawn(Vector2 spawnPosition, Sprite2D sprite);
+        public void Spawn(Vector2 spawnPosition, Texture2D sprite);
     }
 }
