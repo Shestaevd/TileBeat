@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TileBeat.scripts.FSM
 {
@@ -16,42 +15,49 @@ namespace TileBeat.scripts.FSM
         public ulong Priority = 0;
 
         public string Name;
-        public void OnEnterModifier(T entity)
+
+        public AbstractState(string name, ulong priority)
         {
-            Modifiers.ForEach(modifier => modifier.EnterModify(entity));
-        }
-        public void UpdateModifier(T entity)
-        {
-            Modifiers.ForEach(modifier => modifier.UpdateModify(entity));
-        }
-        public void OnExitModifier(T entity)
-        {
-            Modifiers.ForEach(modifier => modifier.ExitModify(entity));
+            Name = name;
+            Priority = priority;
         }
 
-        abstract protected void OnEnterLogic(T entity);
-        abstract protected void OnUpdateLogic(T entity);
-        abstract protected void OnExitLogic(T entity);
-        public void OnEnter(T entity)
+        public void OnEnterModifier(T entity, double delta)
         {
-            OnEnterLogic(entity);
-            Modifiers.ForEach(m => m.EnterModify(entity));
+            Modifiers.ForEach(modifier => modifier.EnterModify(entity, delta));
         }
-        public void OnUpdate(T entity)
+        public void UpdateModifier(T entity, double delta)
         {
-            OnUpdateLogic(entity);
-            Modifiers.ForEach(m => m.UpdateModify(entity));
+            Modifiers.ForEach(modifier => modifier.UpdateModify(entity, delta));
         }
-        public void OnExit(T entity)
+        public void OnExitModifier(T entity, double delta)
         {
-            OnExitLogic(entity);
-            Modifiers.ForEach(m => m.ExitModify(entity));
+            Modifiers.ForEach(modifier => modifier.ExitModify(entity, delta));
+        }
+
+        abstract protected void OnEnterLogic(T entity, double delta);
+        abstract protected void OnUpdateLogic(T entity, double delta);
+        abstract protected void OnExitLogic(T entity, double delta);
+        public void OnEnter(T entity, double delta)
+        {
+            OnEnterLogic(entity, delta);
+            Modifiers.ForEach(m => m.EnterModify(entity, delta));
+        }
+        public void OnUpdate(T entity, double delta)
+        {
+            OnUpdateLogic(entity, delta);
+            Modifiers.ForEach(m => m.UpdateModify(entity, delta));
+        }
+        public void OnExit(T entity, double delta)
+        {
+            OnExitLogic(entity, delta);
+            Modifiers.ForEach(m => m.ExitModify(entity, delta));
         }
         public void AddModifier(StateModifier<T> m)
         {
             Modifiers.Add(m);
         }
-        virtual public bool EnterCondition(T entity)
+        virtual public bool EnterCondition(T entity, double delta)
         {
             return true;
         }

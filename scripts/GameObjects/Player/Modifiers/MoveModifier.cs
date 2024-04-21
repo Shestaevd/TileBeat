@@ -1,23 +1,20 @@
 ﻿using Godot;
 using TileBeat.scripts.FSM;
-using TileBeat.scripts.GameObjects.Player.States;
+using TileBeat.scripts.GameUtils;
 
 namespace TileBeat.scripts.GameObjects.Player.Modifiers
 {
     public class MoveModifier : StateModifier<PlayerEntity>
     {
-        public override void EnterModify(PlayerEntity entity) { }
+        public override void EnterModify(PlayerEntity entity, double delta) { }
 
-        public override void ExitModify(PlayerEntity entity) { }    
+        public override void ExitModify(PlayerEntity entity, double delta) { }    
         
-        public override void UpdateModify(PlayerEntity entity)
+        public override void UpdateModify(PlayerEntity entity, double delta)
         {
-            Vector2 direction = new Vector2(
-                Input.GetActionStrength(PlayerStateMap.InputMapRight) - Input.GetActionStrength(PlayerStateMap.InputMapLeft),
-                Input.GetActionStrength(PlayerStateMap.InputMapDown) - Input.GetActionStrength(PlayerStateMap.InputMapUp)     
-            );
+            Vector2 direction = Utils.GetDirection();
 
-            entity.Velocity = direction.Normalized() * entity.Speed;
+            entity.Velocity = direction * entity.Speed;
            
             entity.MoveAndSlide();
         }

@@ -18,23 +18,23 @@ namespace TileBeat.scripts.FSM
             states.ForEach(s => AddState(s));
         }
 
-        public void Run(T entity)
+        public void Run(T entity, double delta)
         {
             AbstractState<T> previous = entity.GetState();
             AbstractState<T> currentState = entity.GetState();
-            if (GetNewState(entity, ref currentState))
+            if (GetNewState(entity, delta, ref currentState))
             {
-                previous.OnExit(entity);
-                currentState.OnEnter(entity);
-                currentState.OnUpdate(entity);
+                previous.OnExit(entity, delta);
+                currentState.OnEnter(entity, delta);
+                currentState.OnUpdate(entity, delta);
             }
             else
             {
-                currentState.OnUpdate(entity);
+                currentState.OnUpdate(entity, delta);
             }
             entity.SetState(currentState);
         }
-        private bool GetNewState(T entity, ref AbstractState<T> current)
+        private bool GetNewState(T entity, double delta, ref AbstractState<T> current)
         {
             if (!current.Lock)
             {
@@ -46,7 +46,7 @@ namespace TileBeat.scripts.FSM
                         foreach (AbstractState<T> state in States)
                             if (previous.WhiteList.Exists(s => s.Name == state.Name)
                                 && (state.TransitFrom.Count == 0 || state.TransitFrom.Contains(previous))
-                                && state.EnterCondition(entity)
+                                && state.EnterCondition(entity, delta)
                                 && priority < state.Priority)
                             {
                                 priority = state.Priority;
@@ -58,7 +58,7 @@ namespace TileBeat.scripts.FSM
                         {
                             if (previous.BlackList.TrueForAll(s => s.Name != state.Name)
                                 && (state.TransitFrom.Count == 0 || state.TransitFrom.Contains(previous))
-                                && state.EnterCondition(entity)
+                                && state.EnterCondition(entity, delta)
                                 && priority < state.Priority)
                             {
                                 priority = state.Priority;
@@ -69,7 +69,7 @@ namespace TileBeat.scripts.FSM
                     case 0:
                         foreach (AbstractState<T> state in States)
                         {
-                            if (state.EnterCondition(entity)
+                            if (state.EnterCondition(entity, delta)
                                 && (state.TransitFrom.Count == 0 || state.TransitFrom.Contains(previous))
                                 && priority < state.Priority)
                             {
@@ -111,25 +111,25 @@ namespace TileBeat.scripts.FSM
             AddState(newState);
             return newState;
         }
-        public State<T> NewStateInstance(string name, ulong priority, Action<T> stateLogic)
+        public State<T> NewStateInstance(string name, ulong priority, Action<T, double> stateLogic)
         {
             State<T> newState = new State<T>(name, priority, stateLogic);
             AddState(newState);
             return newState;
         }
-        public State<T> NewStateInstance(string name, ulong priority, Action<T> stateLogic, Func<T, bool> enterCondition)
+        public State<T> NewStateInstance(string name, ulong priority, Action<T, double> stateLogic, Func<T,double, bool> enterCondition)
         {
             State<T> newState = new State<T>(name, priority, stateLogic, enterCondition);
             AddState(newState);
             return newState;
         }
-        public State<T> NewStateInstance(string name, ulong priority, Action<T> stateLogic, Action<T> onStateEnter, Action<T> onStateExit)
+        public State<T> NewStateInstance(string name, ulong priority, Action<T, double> stateLogic, Action<T, double> onStateEnter, Action<T, double> onStateExit)
         {
             State<T> newState = new State<T>(name, priority, stateLogic, onStateEnter, onStateExit);
             AddState(newState);
             return newState;
         }
-        public State<T> NewStateInstance(string name, ulong priority, Action<T> stateLogic, Action<T> onStateEnter, Action<T> onStateExit, Func<T, bool> enterCondition)
+        public State<T> NewStateInstance(string name, ulong priority, Action<T, double> stateLogic, Action<T, double> onStateEnter, Action<T, double> onStateExit, Func<T, double, bool> enterCondition)
         {
             State<T> newState = new State<T>(name, priority, stateLogic, onStateEnter, onStateExit, enterCondition);
             AddState(newState);

@@ -4,5 +4,6 @@
     {
         Idle = 1,
         Move = 2,
+        Dash = 3
     }
 }

@@ -1,86 +1,73 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TileBeat.scripts.FSM
 {
     public class State<T> : AbstractState<T>
     {
-        private Action<T> _onEnter;
-        private Action<T> _inState;
-        private Action<T> _onExit;
-        private Func<T, bool> EnterConditionD = _ => true;
+        private Action<T, double> _onEnter;
+        private Action<T, double> _inState;
+        private Action<T, double> _onExit;
+        private Func<T, double, bool> EnterConditionD = (_, _) => true;
 
-        public State(string name, ulong priority)
-        {
-            Name = name;
-            base.Priority = priority;
+        public State(string name, ulong priority) : base(name, priority)
+        { 
+           
         }
-        public State(string name, ulong priority, Action<T> stateLogic)
+        public State(string name, ulong priority, Action<T, double> stateLogic) : base(name, priority)
         {
-            Name = name;
             _inState = stateLogic;
-            base.Priority = priority;
         }
-        public State(string name, ulong priority, Action<T> stateLogic, Func<T, bool> enterCondition)
+        public State(string name, ulong priority, Action<T, double> stateLogic, Func<T, double, bool> enterCondition) : base(name, priority)
         {
-            Name = name;
             _inState = stateLogic;
             EnterConditionD = enterCondition;
-            base.Priority = priority;
         }
-        public State(string name, ulong priority, Action<T> stateLogic, Action<T> onStateEnter, Action<T> onStateExit)
+        public State(string name, ulong priority, Action<T, double> stateLogic, Action<T, double> onStateEnter, Action<T, double> onStateExit) : base(name, priority)
         {
-            Name = name;
             _inState = stateLogic;
             _onEnter = onStateEnter;
             _onExit = onStateExit;
-            base.Priority = priority;
         }
-        public State(string name, ulong priority, Action<T> stateLogic, Action<T> onStateEnter, Action<T> onStateExit, Func<T, bool> enterCondition)
+        public State(string name, ulong priority, Action<T, double> stateLogic, Action<T, double> onStateEnter, Action<T, double> onStateExit, Func<T, double, bool> enterCondition) : base(name, priority)
         {
-            Name = name;
             _inState = stateLogic;
             _onEnter = onStateEnter;
             _onExit = onStateExit;
             EnterConditionD = enterCondition;
-            base.Priority = priority;
         }
-        override protected void OnEnterLogic(T entity)
+        override protected void OnEnterLogic(T entity, double delta)
         {
-            _onEnter?.Invoke(entity);
+            _onEnter?.Invoke(entity, delta);
         }
-        override protected void OnUpdateLogic(T entity)
+        override protected void OnUpdateLogic(T entity, double delta)
         {
-            _inState?.Invoke(entity);
+            _inState?.Invoke(entity, delta);
         }
-        override protected void OnExitLogic(T entity)
+        override protected void OnExitLogic(T entity, double delta)
         {
-            _onExit?.Invoke(entity);
+            _onExit?.Invoke(entity, delta);
         }
-        override public bool EnterCondition(T entity)
+        override public bool EnterCondition(T entity, double delta)
         {
             if (EnterConditionD == null) return true;
-            return EnterConditionD.Invoke(entity);
+            return EnterConditionD.Invoke(entity, delta);
         }
         public State<T> SetName(string name)
         {
             Name = name;
             return this;
         }
-        public State<T> SetOnStateEnter(Action<T> enterLogic)
+        public State<T> SetOnStateEnter(Action<T, double> enterLogic)
         {
             _onEnter = enterLogic;
             return this;
         }
-        public State<T> SetStateLogic(Action<T> stateLogic)
+        public State<T> SetStateLogic(Action<T, double> stateLogic)
         {
             _inState = stateLogic;
             return this;
         }
-        public State<T> SetOnStateExit(Action<T> onStateExit)
+        public State<T> SetOnStateExit(Action<T, double> onStateExit)
         {
             _onExit = onStateExit;
             return this;
@@ -105,14 +92,10 @@ namespace TileBeat.scripts.FSM
             base.ToTransitFrom(state);
             return this;
         }
-        public State<T> SetEnterCondition(Func<T, bool> con)
+        public State<T> SetEnterCondition(Func<T, double, bool> con)
         {
             EnterConditionD = con;
             return this;
-        }
-        public static State<T> GetEmpty()
-        {
-            return new State<T>("null_state", 0);
         }
     }
 }
