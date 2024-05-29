@@ -20,8 +20,8 @@ namespace TileBeat.scripts.FSM
 
         public void Run(T entity, double delta)
         {
-            AbstractState<T> previous = entity.GetState();
-            AbstractState<T> currentState = entity.GetState();
+            AbstractState<T> previous = entity.State;
+            AbstractState<T> currentState = entity.State;
             if (GetNewState(entity, delta, ref currentState))
             {
                 previous.OnExit(entity, delta);
@@ -32,7 +32,7 @@ namespace TileBeat.scripts.FSM
             {
                 currentState.OnUpdate(entity, delta);
             }
-            entity.SetState(currentState);
+            entity.State = currentState;
         }
         private bool GetNewState(T entity, double delta, ref AbstractState<T> current)
         {

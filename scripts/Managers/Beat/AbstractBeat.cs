@@ -6,15 +6,15 @@ namespace TileBeat.scripts.Managers.Beat
     public abstract record AbstractBeat
     {
 
-        protected float _targetDelta;
-        public float TargetDelta
+        protected float _targetPosition;
+        public float TargetPosition
         {
-            get { return _targetDelta; }
+            get { return _targetPosition; }
         }
-        protected float _currentDelta;
-        public float CurrentDelta
+        protected float _currentPosition;
+        public float CurrentPosition
         {
-            get { return _targetDelta; }
+            get { return _targetPosition; }
         }
 
         public uint Index;
@@ -22,54 +22,25 @@ namespace TileBeat.scripts.Managers.Beat
         public AbstractBeat(uint index, float targetTime)
         {
             Index = index;
-            _targetDelta = targetTime;
+            _targetPosition = targetTime;
         }
 
         public bool IsExpired()
         {
-            return _currentDelta > _targetDelta;
+            return _currentPosition > _targetPosition;
         }
 
         public float UntilBeat() 
         {
-            return _targetDelta - _currentDelta;
+            return _targetPosition - _currentPosition;
         }
 
-        public void SetPosition(double delta)
+        public void SetPosition(double position)
         {
-            _currentDelta = (float) delta;
+            _currentPosition = (float) position;
         }
     }
 
-    public record EmptyBeat(uint index, float targetDelta) : AbstractBeat(index, targetDelta);
-
-    public record Beat(uint index, float targetDelta, Action OnBeat = null) : AbstractBeat(index, targetDelta);
+    public record Beat(uint index, float targetPosition, Action OnBeat = null) : AbstractBeat(index, targetPosition);
 
 }
-
-
-
-//public Tuple<Vector2, Vector2> GetPosition(Vector2 center, float viewportX)
-//{
-//    Vector2 start = new Vector2(center.X - viewportX / 2, center.Y);
-//    Vector2 startTwin = new Vector2(center.X + viewportX / 2, center.Y);
-//    return Tuple.Create(start.Lerp(center, _currentDelta / _targetDelta), startTwin.Lerp(center, _currentDelta / _targetDelta));
-//}
-
-//public float HowAccurate(float accuracy)
-//{
-//    if (accuracy > 1f || accuracy < 0f) throw new ArgumentException("accuracy must be greater then 0 and less then 1");
-//    float accuracyStartTime = Mathf.Lerp(0, _targetTime, accuracy);
-//    float accuracyTargetTime = _targetTime - accuracyStartTime;
-//    float oneP = accuracyTargetTime * 0.01f;
-//    float accuracyCurrentTime = _currentTime - accuracyStartTime;
-
-//    if (accuracyCurrentTime > 0)
-//    {
-//        return accuracyCurrentTime / oneP;
-//    }
-//    else
-//    {
-//        return 0f;
-//    }
-//}

@@ -1,9 +1,86 @@
-[gd_scene load_steps=2 format=3 uid="uid://bu6d8jafugvaw"]
+[gd_scene load_steps=7 format=3 uid="uid://bu6d8jafugvaw"]
 
 [ext_resource type="Script" path="res://scripts/TestLogic/CharTest.cs" id="1_asujb"]
+[ext_resource type="PackedScene" uid="uid://bwoef716wy8nr" path="res://scenes/prefab/BeatRender.tscn" id="2_pyt2o"]
+[ext_resource type="Texture2D" uid="uid://cun8pwbp4gjci" path="res://assets/test/beat_marker.png" id="3_tgieq"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_60825"]
+vertices = PackedVector2Array(-6, -126, -6, -194, 258, -235, 258, 11, -242, -235, -74, -194, -242, 11, -74, -126)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 2, 1, 5), PackedInt32Array(0, 3, 6, 7), PackedInt32Array(7, 6, 4, 5)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-288, -272, 288, -272, 288, 48, -288, 48), PackedVector2Array(-64, -184, -64, -184, -64, -136, -16, -136, -16, -184)])
+source_geometry_group_name = &"navigation_polygon_source_group"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bi7ch"]
+size = Vector2(48, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3dtbk"]
+size = Vector2(48, 48)
 
 [node name="Root" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("1_asujb")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="Sprite2D" parent="." instance=ExtResource("2_pyt2o")]
+position = Vector2(40, 32)
+scale = Vector2(80, 64)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -112)
+zoom = Vector2(2, 2)
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_60825")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="NavigationRegion2D"]
+position = Vector2(-40, -160)
+
+[node name="Sprite2D" type="Sprite2D" parent="NavigationRegion2D/StaticBody2D"]
+scale = Vector2(1.5, 0.09375)
+texture = ExtResource("3_tgieq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/StaticBody2D"]
+shape = SubResource("RectangleShape2D_bi7ch")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="NavigationRegion2D"]
+position = Vector2(-272, -120)
+scale = Vector2(0.833982, 13.9411)
+
+[node name="Sprite2D" type="Sprite2D" parent="NavigationRegion2D/StaticBody2D2"]
+scale = Vector2(1.5, 0.09375)
+texture = ExtResource("3_tgieq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/StaticBody2D2"]
+shape = SubResource("RectangleShape2D_3dtbk")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="NavigationRegion2D"]
+position = Vector2(288, -120)
+scale = Vector2(0.833982, 13.9411)
+
+[node name="Sprite2D" type="Sprite2D" parent="NavigationRegion2D/StaticBody2D3"]
+scale = Vector2(1.5, 0.09375)
+texture = ExtResource("3_tgieq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/StaticBody2D3"]
+shape = SubResource("RectangleShape2D_3dtbk")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="NavigationRegion2D"]
+position = Vector2(-8, -264)
+scale = Vector2(15.3144, 0.777543)
+
+[node name="Sprite2D" type="Sprite2D" parent="NavigationRegion2D/StaticBody2D4"]
+scale = Vector2(1.5, 0.09375)
+texture = ExtResource("3_tgieq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/StaticBody2D4"]
+shape = SubResource("RectangleShape2D_3dtbk")
+
+[node name="StaticBody2D5" type="StaticBody2D" parent="NavigationRegion2D"]
+position = Vector2(-8, 40)
+scale = Vector2(15.3144, 0.777543)
+
+[node name="Sprite2D" type="Sprite2D" parent="NavigationRegion2D/StaticBody2D5"]
+scale = Vector2(1.5, 0.09375)
+texture = ExtResource("3_tgieq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NavigationRegion2D/StaticBody2D5"]
+shape = SubResource("RectangleShape2D_3dtbk")

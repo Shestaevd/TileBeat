@@ -5,9 +5,9 @@ using System.IO;
 
 namespace TileBeat.scripts.Loaders
 {
-    internal class AudioStreamLoader
+    public class AudioStreamLoader
     {
-        public static AudioStream LoadAudio(string path)
+        public static AudioStream LoadFromFSAudio(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);
             switch (Path.GetExtension(path)) 
@@ -24,5 +24,11 @@ namespace TileBeat.scripts.Loaders
                     throw new FormatException("Audio loader support only Wav and Mp3");
             }
         }
+
+        public static AudioStream LoadDashSound()
+        {
+            return LoadFromFSAudio("E:\\GodotProjects\\TileBeat\\assets\\test\\Kick.mp3");
+        }
+
     }
 }

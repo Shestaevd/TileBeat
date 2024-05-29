@@ -9,34 +9,43 @@ namespace TileBeat.scripts.Managers.Beat
     public partial class BeatManager : AudioStreamPlayer
 	{
         private event Action<uint> OnBeat;
-        private LinkedList<AbstractBeat> _beats;
+
+        private LinkedList<AbstractBeat> _beats = new LinkedList<AbstractBeat>();
+        private AbstractBeat _prevBeat = null;
+
+        public static BeatManager Spawn(GodotTrack godotTrack, Node parent)
+        {
+            BeatManager bm = new BeatManager(godotTrack);
+            bm.Name = "BeatManager";
+            parent.AddChild(bm);
+            return bm;
+        }
 
         public LinkedList<AbstractBeat> Beats
         {
             get { return _beats; }
         }
 
-        public BeatManager(GodotTrack track, LinkedList<AbstractBeat> beats)
+        public BeatManager(GodotTrack track)
 		{
-            _beats = new LinkedList<AbstractBeat>(beats.OrderBy(a => a.TargetDelta).ToList());
+            _beats = new LinkedList<AbstractBeat>(track.beats.OrderBy(a => a.TargetPosition).ToList());
             Stream = track.audioStream;
-           
-        }
-
-
-        public override void _Ready()
-		{
-            Subscribe(i => { 
-                if (i == 0)
-                {
-                    GD.Print("track started");
-                }
-            });
         }
 
         public void Subscribe(Action<uint> action)
         {
             OnBeat += action;
+        }
+
+        public void SubscribeOnNext(Action<uint> action)
+        {
+            uint nextIndex = CurrentBeatIndex();
+            OnBeat += i => { if (i == nextIndex + 1) action(i); };
+        }
+
+        public override void _Ready()
+        {
+            Stop();
         }
 
         public override void _Process(double delta)
@@ -50,14 +59,14 @@ namespace TileBeat.scripts.Managers.Beat
             AbstractBeat currentBeat = _beats.FirstOrDefault();
             if (currentBeat != null && currentBeat.IsExpired() && currentBeat is Beat beat)
             {
-                GD.Print($"Beat expired {currentBeat.CurrentDelta}");
                 OnBeat?.Invoke(beat.Index);
                 beat.OnBeat?.Invoke();
+                _prevBeat = currentBeat;
                 _beats.RemoveFirst();
             }
         }
 
-        public uint CurrentBeat()
+        public uint CurrentBeatIndex()
         {
             AbstractBeat currentBeat = _beats.FirstOrDefault();
             if (currentBeat != null)
@@ -65,21 +74,6 @@ namespace TileBeat.scripts.Managers.Beat
                 return currentBeat.Index;
             }
             return uint.MaxValue;
-        }
-
-        public void SetPlaybackPosition(long position)
-        {
-            Seek(position);
-        }
-
-        public void SetVolume(float volume)
-        {
-            VolumeDb = Mathf.Lerp(-80f, 24f, volume);
-        }
-
-        public float GetVolume()
-        {
-            return VolumeDb;
         }
 
         public float UntilNextBeat()
@@ -92,6 +86,31 @@ namespace TileBeat.scripts.Managers.Beat
             return float.MaxValue;
         }
 
+        public float FromLastBeat()
+        {
+            if (_prevBeat == null)
+            {
+                return float.MaxValue;
+            }
+            else
+            {
+                return GetPlaybackPosition() - _prevBeat.TargetPosition;
+            }
+        }
+
+        public float InBeatRangePrecision(float precision)
+        {
+            float until = UntilNextBeat();
+            float from = FromLastBeat();
+            float currentBeatPosition = until > from ? from : until;
+            
+            if (currentBeatPosition > precision) 
+                return 0f; 
+            else
+                return currentBeatPosition / (precision / 100f);
+
+        }
+
         public void Pause()
         {
             Stop();
@@ -100,7 +119,7 @@ namespace TileBeat.scripts.Managers.Beat
         public void Reset()
         {
             Stop();
-            SetPlaybackPosition(0);
+            Seek(0);
         }
     }
 }
