@@ -1,6 +1,7 @@
 ﻿using Godot;
 using System.Linq;
 using TileBeat.scripts.GameObjects.Entities.Abstract;
+using TileBeat.scripts.GameUtils;
 
 namespace TileBeat.scripts.GameObjects.Utilites.Projectiles
 {
@@ -45,7 +46,7 @@ namespace TileBeat.scripts.GameObjects.Utilites.Projectiles
                 if (col is IDamagable damagable)
                 {
                     destroy = true;
-                    damagable.DealDamage(_damage);
+                    damagable.DoDamage(_damage, new Some<Vector2>(GlobalPosition));
                 } 
                 else if (col is StaticBody2D)
                 {

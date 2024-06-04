@@ -16,7 +16,7 @@ namespace TileBeat.scripts.GameObjects.Player.Modifiers
 
         public override void UpdateModify(PlayerEntity entity, double delta)
         {
-            if (entity.DashCooldownRest > 0) entity.DashCooldownRest = entity.DashCooldownRest - (float) delta;
+            //if (entity.DashCooldownRest > 0) entity.DashCooldownRest = entity.DashCooldownRest - (float) delta;
         }
     }
 }

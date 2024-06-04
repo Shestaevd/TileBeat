@@ -1,12 +1,17 @@
-[gd_scene load_steps=39 format=3 uid="uid://dcj7owa0cbvt2"]
+[gd_scene load_steps=41 format=3 uid="uid://dcj7owa0cbvt2"]
 
 [ext_resource type="Script" path="res://scripts/GameObjects/Entities/Player/PlayerEntity.cs" id="1_aqcjc"]
+[ext_resource type="Texture2D" uid="uid://cjydcv5rbpbys" path="res://assets/animations/player/Colour1/NoOutline/120x80_PNGSheets/_Hit.png" id="2_0fa5u"]
 [ext_resource type="Texture2D" uid="uid://detaq4w5ofm1m" path="res://assets/animations/player/Colour1/NoOutline/120x80_PNGSheets/_Roll.png" id="2_j2b0c"]
 [ext_resource type="Texture2D" uid="uid://dikf8yugyeo0p" path="res://assets/animations/player/Colour1/NoOutline/120x80_PNGSheets/_Idle.png" id="3_jj2re"]
 [ext_resource type="Texture2D" uid="uid://j6guoy4molh4" path="res://assets/animations/player/Colour1/NoOutline/120x80_PNGSheets/_Run.png" id="4_spmle"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4o7ue"]
-size = Vector2(160, 300)
+size = Vector2(150, 280)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p17xx"]
+atlas = ExtResource("2_0fa5u")
+region = Rect2(0, 0, 120, 80)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3xgtb"]
 atlas = ExtResource("2_j2b0c")
@@ -140,6 +145,14 @@ region = Rect2(1080, 0, 120, 80)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_p17xx")
+}],
+"loop": true,
+"name": &"Damaged",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_3xgtb")
 }, {
 "duration": 1.0,
@@ -251,18 +264,20 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D"]
+collision_layer = 6
+collision_mask = 8
 script = ExtResource("1_aqcjc")
 
 [node name="PlayerCollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-5, 17)
+position = Vector2(0.5, 1)
 scale = Vector2(0.1, 0.1)
 shape = SubResource("RectangleShape2D_4o7ue")
 
 [node name="PlayerAnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(-0.5, 0.499998)
+position = Vector2(5, -15)
 scale = Vector2(0.849624, 0.7875)
 sprite_frames = SubResource("SpriteFrames_hpn5x")
-animation = &"Dash"
+animation = &"Damaged"
 
 [node name="PlayerAudio2D" type="AudioStreamPlayer2D" parent="."]
 

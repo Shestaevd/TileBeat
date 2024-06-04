@@ -15,10 +15,8 @@ namespace TileBeat.scripts.TestLogic
         private PlayerEntity _player;
         private SimpleShootingEnemyEntity _en;
 
-        private StateMachine<PlayerEntity> playerFsm = 
-            new StateMachine<PlayerEntity>(PlayerStateMap.Idle, PlayerStateMap.Run, PlayerStateMap.Dash);
-        private StateMachine<SimpleShootingEnemyEntity> enemyFsm = 
-            new StateMachine<SimpleShootingEnemyEntity>(SimpleEnemyStateMap.Passive, SimpleEnemyStateMap.MoveToPlayer, SimpleEnemyStateMap.Attack);
+        private StateMachine<PlayerEntity> playerFsm = new StateMachine<PlayerEntity>();
+        private StateMachine<SimpleShootingEnemyEntity> enemyFsm = new StateMachine<SimpleShootingEnemyEntity>();
 
         public override void _Ready()
         {

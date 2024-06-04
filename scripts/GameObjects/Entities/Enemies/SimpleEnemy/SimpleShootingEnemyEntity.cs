@@ -1,4 +1,5 @@
 ﻿using Godot;
+using System.Collections.Generic;
 using TileBeat.scripts.FSM;
 using TileBeat.scripts.GameObjects.Enemies.SimpleEnemy.States;
 using TileBeat.scripts.GameObjects.Player;
@@ -27,9 +28,9 @@ namespace TileBeat.scripts.GameObjects.Enemies.SimpleEnemy
 
         [ExportCategory("Properties")]
         [Export] public float Health = 100f;
+        [Export] public float OnTouchDamage = 10f;
 
         public PlayerEntity Player;
-
         public BeatManager BeatManager;
         public AnimatedSprite2D Animator;
         public AudioStreamPlayer2D AudioStreamPlayer;
@@ -39,8 +40,11 @@ namespace TileBeat.scripts.GameObjects.Enemies.SimpleEnemy
         public NavigationAgent2D NavigationAgent;
 
         private AbstractState<SimpleShootingEnemyEntity> state = SimpleEnemyStateMap.Passive;
-
+        private List<AbstractState<SimpleShootingEnemyEntity>> _states = new(new AbstractState<SimpleShootingEnemyEntity>[] { SimpleEnemyStateMap.Passive, SimpleEnemyStateMap.MoveToPlayer(), SimpleEnemyStateMap.Attack() });
         public AbstractState<SimpleShootingEnemyEntity> State { get => state; set => state = value; }
+        public List<AbstractState<SimpleShootingEnemyEntity>> AllStates => _states;
+
+
 
         public override void _Ready()
         {

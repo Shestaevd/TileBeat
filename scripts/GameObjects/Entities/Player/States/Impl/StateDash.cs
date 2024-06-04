@@ -1,16 +1,15 @@
 ﻿using Godot;
 using TileBeat.scripts.FSM;
-using System;
 using TileBeat.scripts.GameUtils;
 
 namespace TileBeat.scripts.GameObjects.Player.States.Impl
 {
     public class StateDash : AbstractState<PlayerEntity>
     {
-        float _timer = 0f;
+        private float _timer = 0f;
         public StateDash(string name, ulong priority) : base(name, priority) 
         {
-
+            AddModifier(PlayerStateMap.irm);
         }
 
         protected override void OnEnterLogic(PlayerEntity entity, double delta)
@@ -18,14 +17,14 @@ namespace TileBeat.scripts.GameObjects.Player.States.Impl
             entity.Velocity = Utils.GetAbsoluteDirection() * entity.DashSpeed;
             entity.Animator.Play(Name);
             entity.AudioStreamPlayer.Stream = entity.DashSound;
+            entity.SetCollisionLayerValue(3, false);
             entity.AudioStreamPlayer.Play(0);
             _timer = entity.DashTime;
-            Lock = true;
         }
 
         protected override void OnExitLogic(PlayerEntity entity, double delta)
         {
-            entity.DashCooldownRest = entity.DashCooldown;
+            entity.SetCollisionLayerValue(3, true);
         }
 
         protected override void OnUpdateLogic(PlayerEntity entity, double delta)
@@ -35,16 +34,11 @@ namespace TileBeat.scripts.GameObjects.Player.States.Impl
                 _timer = _timer - (float) delta;
                 entity.MoveAndSlide();
             }
-            else
-            {
-                Lock = false;
-            }
         }
 
         public override bool EnterCondition(PlayerEntity entity, double delta)
         {
-            return Input.IsActionJustPressed(PlayerControlMapping.InputMapDash) 
-                && entity.BeatManger.InBeatRangePrecision(entity.BeatPrecision) > 0;
+            return (Input.IsActionJustPressed(PlayerControlMapping.InputMapDash) && entity.BeatManger.InBeatRangePrecision(entity.BeatPrecision) > 0) || _timer > 0f;
         }
     }
 }

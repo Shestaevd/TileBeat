@@ -9,11 +9,12 @@ namespace TileBeat.scripts.GameObjects.Enemies.SimpleEnemy.States
 
         public static CheckPlayerModifier cpm = new CheckPlayerModifier();
 
-        public static State<SimpleShootingEnemyEntity> Passive = new State<SimpleShootingEnemyEntity>("Passive", (ulong) SimpleEnemyStatePriority.Passive).AddModifier(cpm);
+        public static State<SimpleShootingEnemyEntity> Passive = new State<SimpleShootingEnemyEntity>("Passive", (ulong)SimpleEnemyStatePriority.Passive).AddModifier(cpm);
 
-        public static MoveToPlayerState MoveToPlayer = new MoveToPlayerState("MoveToPlayer", (ulong) SimpleEnemyStatePriority.MoveToPlayer);
+        public static MoveToPlayerState MoveToPlayer() { return new MoveToPlayerState("MoveToPlayer", (ulong)SimpleEnemyStatePriority.MoveToPlayer); }
 
-        public static AttackState Attack = new AttackState("Attack", (ulong) SimpleEnemyStatePriority.Attack);
+        public static AttackState Attack() { return new AttackState("Attack", (ulong)SimpleEnemyStatePriority.Attack); }
+
 
     }
 }

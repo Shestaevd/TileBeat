@@ -4,6 +4,7 @@
     {
         Idle = 1,
         Run = 2,
-        Dash = 3
+        Damaged = 3,
+        Dash = 4
     }
 }

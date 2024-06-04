@@ -2,7 +2,6 @@
 using TileBeat.scripts.GameObjects.Player;
 using TileBeat.scripts.GameObjects.Player.States;
 using System.Linq;
-using System;
 
 namespace TileBeat.scripts.GameUtils
 {
@@ -24,15 +23,19 @@ namespace TileBeat.scripts.GameUtils
             ).Normalized();
         }
 
-        public static PlayerEntity GetPlayerOverlapping(Area2D area)
+        public static Maybe<T> FindOverlappingBody<T>(Area2D area) where T : Node2D
         {
-                Node2D pe = area.GetOverlappingBodies().ToList().Find(collider => collider is PlayerEntity);
-                return (PlayerEntity)pe;
+            return Maybe<Node2D>.Of(area.GetOverlappingBodies().ToList().Find(collider => collider is T)).Map(node => (T) node);
+        }
+
+        public static Maybe<PlayerEntity> FindOverlappingPlayer(Area2D area)
+        {
+            return FindOverlappingBody<PlayerEntity>(area);
         }
 
         public static bool IsPlayerOverlapping(Area2D area)
         {
-            return GetPlayerOverlapping(area) != null;
+            return FindOverlappingPlayer(area).IsPresent();
         }
     }
 }

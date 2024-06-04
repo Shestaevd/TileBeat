@@ -9,10 +9,7 @@ namespace TileBeat.scripts.GameObjects.Enemies.SimpleEnemy.States.Impl
         private float _timeToMove = 0;
         private Vector2 _direction = Vector2.Zero;
 
-        public MoveToPlayerState(string name, ulong priority) : base(name, priority)
-        {
-
-        }
+        public MoveToPlayerState(string name, ulong priority) : base(name, priority) { }
 
         protected override void OnEnterLogic(SimpleShootingEnemyEntity entity, double delta)
         {

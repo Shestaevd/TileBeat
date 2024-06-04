@@ -140,8 +140,8 @@ radius = 8.0
 radius = 128.0
 
 [node name="SimpleShootingEnemy" type="CharacterBody2D"]
-collision_layer = 2
-collision_mask = 2
+collision_layer = 8
+collision_mask = 0
 script = ExtResource("1_awmxd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -156,13 +156,18 @@ frame_progress = 0.211272
 shape = SubResource("CircleShape2D_pxaf1")
 
 [node name="AreaAgro" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AreaAgro"]
 shape = SubResource("CircleShape2D_jk6xx")
+debug_color = Color(0.00392157, 0.596078, 0.713726, 0.482353)
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 
 [node name="AreaDamageOnTouch" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShapeDamage" type="CollisionShape2D" parent="AreaDamageOnTouch"]
 shape = SubResource("CircleShape2D_pxaf1")
